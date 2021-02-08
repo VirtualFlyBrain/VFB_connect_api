@@ -59,7 +59,7 @@ class SubclassesEndpoint(Resource):
 
         * Term query (mandatory)
         ```
-        ?query="larval subesophageal zone cypress neuron"
+        ?query="'neuron' that 'overlaps' some 'gall'"
         ```
 
         * Specify filter (optional)
@@ -73,6 +73,9 @@ class SubclassesEndpoint(Resource):
                 query = ast.literal_eval(request.args['query'])
         else:
             raise VfbApiException("Error: No query field provided. Please specify a query.")
+
+        if not query:
+            raise VfbApiException("Error: Query cannot be empty. Please specify a query.")
 
         return vc.get_subclasses(query)
 

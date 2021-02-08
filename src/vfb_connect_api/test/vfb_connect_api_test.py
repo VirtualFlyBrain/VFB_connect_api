@@ -64,25 +64,26 @@ class SubclassesApiTestCase(unittest.TestCase):
         self.app = app.test_client()
 
     def test_get_subclasses_basic(self):
-        response = self.app.get("""/vfb_connect_api/vfb/get_subclasses?query='XXX'""")
+        response = self.app.get("""/vfb_connect_api/vfb/get_subclasses?query=\"'neuron' that 'overlaps' some 'gall'\"""")
         self.assertEqual(200, response.status_code)
 
         response_data = json.loads(response.get_data())
         print(response_data)
-        self.assertEqual(1, len(response_data))
+        self.assertEqual(45, len(response_data))
         self.assertEqual("2ea49d2", response_data[0]["version"])
-        self.assertEqual("Get JSON for Individual:Anatomy", response_data[0]["query"])
-        self.assertEqual("http://virtualflybrain.org/reports/VFB_00010001", response_data[0]["term"]["core"]["iri"])
+        self.assertEqual("Get JSON for Class", response_data[0]["query"])
+        self.assertEqual("http://purl.obolibrary.org/obo/FBbt_00111418", response_data[0]["term"]["core"]["iri"])
 
     def test_get_subclasses_not_found(self):
-        response = self.app.get("""/vfb_connect_api/vfb/get_term_info?ID_list=['not_exists']""")
-        self.assertEqual(200, response.status_code)
+        response = self.app.get("""/vfb_connect_api/vfb/get_subclasses?query='not_exists'""")
+        self.assertEqual(400, response.status_code)
 
         response_data = json.loads(response.get_data())
-        self.assertEqual(0, len(response_data))
+        print(response.get_data())
+        self.assertEqual("Query includes unknown term label: 'not_exists'", response_data["message"])
 
     def test_get_subclasses_missing_param(self):
-        response = self.app.get("""/vfb_connect_api/vfb/get_term_info""")
+        response = self.app.get("""/vfb_connect_api/vfb/get_subclasses""")
         self.assertEqual(400, response.status_code)
 
         response_data = json.loads(response.get_data())
@@ -91,11 +92,11 @@ class SubclassesApiTestCase(unittest.TestCase):
                          response_data["message"])
 
     def test_get_subclasses_empty_param(self):
-        response = self.app.get("""/vfb_connect_api/vfb/get_term_info?ID_list=""")
-        self.assertEqual(200, response.status_code)
+        response = self.app.get("""/vfb_connect_api/vfb/get_subclasses?query=""")
+        self.assertEqual(400, response.status_code)
 
         response_data = json.loads(response.get_data())
-        self.assertEqual(0, len(response_data))
+        self.assertEqual("Error: Query cannot be empty. Please specify a query.", response_data["message"])
 
 
 class InstancesApiTestCase(unittest.TestCase):
