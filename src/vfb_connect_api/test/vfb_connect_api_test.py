@@ -64,7 +64,8 @@ class SubclassesApiTestCase(unittest.TestCase):
         self.app = app.test_client()
 
     def test_get_subclasses_basic(self):
-        response = self.app.get("""/vfb_connect_api/vfb/get_subclasses?query=\"'neuron' that 'overlaps' some 'gall'\"""")
+        response = self.app.get("""/vfb_connect_api/vfb/get_subclasses?query=\"'neuron' \
+        that 'overlaps' some 'gall'\"""")
         self.assertEqual(200, response.status_code)
 
         response_data = json.loads(response.get_data())

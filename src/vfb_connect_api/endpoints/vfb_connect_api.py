@@ -66,7 +66,6 @@ class SubclassesEndpoint(Resource):
 
         """
         print("-"+request.args['query']+"-")
-        print(type(request.args['query']))
         query = ""
         if 'query' in request.args:
             if request.args['query']:
