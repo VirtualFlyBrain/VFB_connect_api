@@ -75,6 +75,30 @@ class SubclassesApiTestCase(unittest.TestCase):
         self.assertEqual("Get JSON for Class", response_data[0]["query"])
         self.assertEqual("http://purl.obolibrary.org/obo/FBbt_00111418", response_data[0]["term"]["core"]["iri"])
 
+    def test_get_subclasses_basic_summary(self):
+        response = self.app.get("""/vfb_connect_api/vfb/get_subclasses?query=\"'neuron' \
+        that 'overlaps' some 'gall'\"&summary=true""")
+        self.assertEqual(200, response.status_code)
+
+        response_data = json.loads(response.get_data())
+        print(response_data)
+        self.assertEqual(45, len(response_data))
+        self.assertEqual("FBbt_00111418", response_data[0]["id"])
+        self.assertEqual("EB-PB 1 glomerulus-Vgall neuron", response_data[0]["label"])
+
+    def test_get_subclasses_basic_summary_defaults(self):
+        response = self.app.get("""/vfb_connect_api/vfb/get_subclasses?query=\"'neuron' \
+        that 'overlaps' some 'gall'\"&summary=false""")
+        self.assertEqual(200, response.status_code)
+        response_data = json.loads(response.get_data())
+
+        response2 = self.app.get("""/vfb_connect_api/vfb/get_subclasses?query=\"'neuron' \
+                that 'overlaps' some 'gall'\"""")
+        self.assertEqual(200, response2.status_code)
+        response_data2 = json.loads(response2.get_data())
+
+        self.assertEqual(response_data, response_data2)
+
     def test_get_subclasses_not_found(self):
         response = self.app.get("""/vfb_connect_api/vfb/get_subclasses?query='not_exists'""")
         self.assertEqual(400, response.status_code)
@@ -115,6 +139,31 @@ class InstancesApiTestCase(unittest.TestCase):
         self.assertEqual("http://virtualflybrain.org/reports/VFB_00100184", response_data[0]["term"]["core"]["iri"])
         self.assertEqual("http://virtualflybrain.org/reports/VFB_00100173", response_data[1]["term"]["core"]["iri"])
 
+    def test_get_instances_basic_summary(self):
+        response = self.app.get("""/vfb_connect_api/vfb/get_instances?query='larval subesophageal """
+                                """zone cypress neuron'&summary=true""")
+        self.assertEqual(200, response.status_code)
+
+        response_data = json.loads(response.get_data())
+        print(response_data)
+        self.assertEqual(2, len(response_data))
+        self.assertEqual("VFB_00100184", response_data[0]["id"])
+        self.assertEqual("VFB_00100173", response_data[1]["id"])
+
+    def test_get_instances_basic_summary_defaults(self):
+        response = self.app.get("""/vfb_connect_api/vfb/get_instances?query='larval subesophageal """
+                                """zone cypress neuron'&summary=false""")
+        self.assertEqual(200, response.status_code)
+        response_data = json.loads(response.get_data())
+
+        response2 = self.app.get("""/vfb_connect_api/vfb/get_instances?query='larval subesophageal """
+                                 """zone cypress neuron'""")
+        self.assertEqual(200, response2.status_code)
+        response_data2 = json.loads(response2.get_data())
+
+        print(response_data)
+        self.assertEqual(response_data, response_data2)
+
     def test_get_instances_not_found(self):
         response = self.app.get("""/vfb_connect_api/vfb/get_instances?query='not_exists'""")
         self.assertEqual(400, response.status_code)
@@ -128,8 +177,7 @@ class InstancesApiTestCase(unittest.TestCase):
 
         response_data = json.loads(response.get_data())
         print(response_data)
-        self.assertEqual("The browser (or proxy) sent a request that this server could not understand.",
-                         response_data["message"])
+        self.assertEqual("Error: No query field provided. Please specify a query.", response_data["message"])
 
     def test_get_instances_empty_param(self):
         response = self.app.get("""/vfb_connect_api/vfb/get_instances?query=""")
@@ -137,6 +185,19 @@ class InstancesApiTestCase(unittest.TestCase):
 
         response_data = json.loads(response.get_data())
         self.assertEqual("Error: query cannot be empty.", response_data["message"])
+
+    def test_get_instances_basic_summary_illegal(self):
+        response = self.app.get("""/vfb_connect_api/vfb/get_instances?query='larval subesophageal """
+                                """zone cypress neuron'&summary=wrong""")
+        self.assertEqual(200, response.status_code)
+        response_data = json.loads(response.get_data())
+
+        response2 = self.app.get("""/vfb_connect_api/vfb/get_instances?query='larval subesophageal """
+                                 """zone cypress neuron'&summary=false""")
+        self.assertEqual(200, response2.status_code)
+        response_data2 = json.loads(response2.get_data())
+
+        self.assertEqual(response_data, response_data2)
 
 
 class DBsApiTestCase(unittest.TestCase):

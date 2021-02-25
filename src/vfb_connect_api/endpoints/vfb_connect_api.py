@@ -62,7 +62,8 @@ class SubclassesEndpoint(Resource):
         ?query="'neuron' that 'overlaps' some 'gall'"
         ```
 
-        * Specify filter (optional)
+        * Summary (optional)
+            True to get results in summary format
 
         """
         print("-"+request.args['query']+"-")
@@ -76,7 +77,12 @@ class SubclassesEndpoint(Resource):
         if not query:
             raise VfbApiException("Error: Query cannot be empty. Please specify a query.")
 
-        return vc.get_subclasses(query)
+        summary = False
+        if 'summary' in request.args:
+            if request.args['summary'] and str(request.args['summary']).lower() == 'true':
+                summary = True
+
+        return vc.get_subclasses(query, summary=summary)
 
 
 @ns.route('/get_instances', methods=['GET'])
@@ -90,12 +96,14 @@ class InstancesEndpoint(Resource):
         Queries Neo4j  to retrieve term instances.
 
         * Term query (mandatory)
+         ```
+        ?query="larval subesophageal zone cypress neuron"
+        ```
 
-        * Specify filter (optional)
+        * Summary (optional)
+            True to get results in summary format
 
         """
-        print("-"+request.args['query']+"-")
-        print(type(request.args['query']))
         if 'query' in request.args:
             if request.args['query']:
                 query = ast.literal_eval(request.args['query'])
@@ -104,7 +112,12 @@ class InstancesEndpoint(Resource):
         else:
             raise VfbApiException("Error: No query field provided. Please specify a query.")
 
-        return vc.get_images(query)
+        summary = False
+        if 'summary' in request.args:
+            if request.args['summary'] and str(request.args['summary']).lower() == 'true':
+                summary = True
+
+        return vc.get_instances(query, summary=summary)
 
 
 @ns.route('/get_dbs', methods=['GET'])

@@ -6,7 +6,7 @@ from vfb_connect_api.exception.api_exception import VfbApiException
 
 log = logging.getLogger(__name__)
 
-api = Api(version='0.0.3', title='VFB_connect RESTful API',
+api = Api(version='Release 1.0', title='VFB_connect RESTful API',
           description='VFB_connect restful API that wraps data/knowledgeBase query endpoints and returns VFB_json')
 
 
