@@ -1,4 +1,4 @@
 vfb_connect
 requests
 flask-restplus==0.13
-Werkzeug==0.16.0
+Werkzeug==3.0.1
